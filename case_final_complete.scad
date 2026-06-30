@@ -37,9 +37,7 @@ foot_inset = 9.0;
 
 // インサートナット用ボス共通寸法
 lid_boss_d = 7.5;   // 蓋固定用ボス外径（四隅）
-board_boss_d = 7.5; // Raspberry Pi・XL4015取付ボス外径（基板と干渉しない最大値、上部のみ）
-board_boss_base_d = 9.0; // 割れ対策の末広がり部底面外径（基板とは接触しない範囲なので拡張可）
-board_boss_flare_h = 3.0; // 末広がり部の高さ
+board_boss_d = 9.0; // Raspberry Pi・XL4015取付ボス外径
 insert_boss_h = 8.0;
 insert_hole_d = 4.8;
 board_insert_hole_d = 4.95; // Raspberry Pi・XL4015用
@@ -139,24 +137,13 @@ module upper_base_shape(x, y, z, r) {
     }
 }
 
-// Raspberry Pi・XL4015 取付ボス（割れ防止のため底面を末広がり形状に）
-// 上部（基板に近い側）は board_boss_d を維持し、基板との干渉を回避
-// 下部（接地側）は board_boss_base_d まで広げて肉厚を確保し割れを防止
+// Raspberry Pi・XL4015 取付ボス
 module board_boss() {
     difference() {
-        union() {
-            cylinder(
-                d1 = board_boss_base_d,
-                d2 = board_boss_d,
-                h = board_boss_flare_h
-            );
-
-            translate([0, 0, board_boss_flare_h])
-                cylinder(
-                    d = board_boss_d,
-                    h = insert_boss_h - board_boss_flare_h
-                );
-        }
+        cylinder(
+            d = board_boss_d,
+            h = insert_boss_h
+        );
 
         translate([0, 0, -1])
             cylinder(

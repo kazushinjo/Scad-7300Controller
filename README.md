@@ -36,8 +36,7 @@ mode = 2;
 - `wall_t = 2.5`
 - `insert_boss_h = 8.0`
 - 蓋固定用ボス（四隅）外径: `7.5 mm` (`lid_boss_d`)
-- Raspberry Pi 4B・XL4015取付ボス外径（基板接触面）: `7.5 mm` (`board_boss_d`、Raspberry Pi基板と干渉しない最大値)
-- Raspberry Pi 4B・XL4015取付ボス外径（接地面、割れ対策の末広がり形状）: `9.0 mm` (`board_boss_base_d`)、末広がり部高さ `3.0 mm` (`board_boss_flare_h`)
+- Raspberry Pi 4B・XL4015取付ボス外径: `9.0 mm` (`board_boss_d`)
 - Raspberry Pi 4B・XL4015取付ボス内径: `4.95 mm`
 - `raspi_board_t = 1.6`
 - Raspberry Pi 4B RJ45・USB開口クリアランス: 各辺 `1.0 mm`
