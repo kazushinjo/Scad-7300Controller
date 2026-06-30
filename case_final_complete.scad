@@ -25,7 +25,7 @@ raspi_hole_pitch_y = 58;
 
 // XL4015 基準位置
 xl_x = wall_t + 18;
-xl_wall_offset = 10; // 背面壁内面から最初のボス中心まで10mm
+xl_wall_offset = 16; // 背面壁内面から最初のボス中心まで16mm（Raspberry Pi基板後端と干渉しない範囲で最大化）
 xl_hole_pitch_x = 34;
 xl_hole_pitch_y = 18;
 xl_y = case_l - wall_t - xl_wall_offset;
