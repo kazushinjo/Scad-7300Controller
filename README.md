@@ -35,7 +35,11 @@ mode = 2;
 - `case_h = 40`
 - `wall_t = 2.5`
 - `insert_boss_h = 8.0`
+- Raspberry Pi 4B・XL4015取付ボス内径: `4.95 mm`
 - `raspi_board_t = 1.6`
+- Raspberry Pi 4B RJ45・USB開口クリアランス: 各辺 `1.0 mm`
+- Raspberry Pi 4B 取付ボス（Y方向）: 壁内面から `24 mm`、ピッチ `58 mm`
+- XL4015取付ボス: 背面壁内面から `10 mm`、`32 mm x 18 mm`の長方形四隅
 
 Raspberry Pi 4B の基準位置と、RJ-45 / USB-A 開口位置はスクリプト内で定義されています。  
 現在の版では `Type-C` 用の開口は含めていません。

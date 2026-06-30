@@ -14,16 +14,21 @@ case_l = 130;
 case_h = 40;
 wall_t = 2.5;
 clearance = 0.5;
+raspi_port_clearance = 1.0; // RJ45・USB開口の各辺の余裕
 r_val = 2.0;
 upper_thickness = 5.0;
 
 // Raspberry Pi 4B 基準位置
 raspi_x = wall_t + 12;
-raspi_y = wall_t + 10;
+raspi_y = wall_t + 24; // 壁内面から最初のボス中心まで24mm
+raspi_hole_pitch_y = 58;
 
 // XL4015 基準位置
 xl_x = wall_t + 18;
-xl_y = wall_t + 89;
+xl_wall_offset = 10; // 背面壁内面から最初のボス中心まで10mm
+xl_hole_pitch_x = 32;
+xl_hole_pitch_y = 18;
+xl_y = case_l - wall_t - xl_wall_offset;
 
 // 下部外側4隅の足
 foot_h = 0.0;
@@ -34,14 +39,15 @@ foot_inset = 9.0;
 insert_boss_d = 7.5;
 insert_boss_h = 8.0;
 insert_hole_d = 4.8;
+board_insert_hole_d = 4.95; // Raspberry Pi・XL4015用
 insert_hole_depth = 9.5;
 
 // Raspberry Pi基板厚
 raspi_board_t = 1.6;
 
-// コネクタ開口底辺（ケース外底面基準）
-// 底板厚2.5mm＋ボス8mm＋基板厚1.6mm
-raspi_port_z = wall_t + insert_boss_h + raspi_board_t; // 12.1mm
+// コネクタ外形の高さ基準（基板下面、ケース外底面から10.5mm）
+// 公式機械寸法図のZ寸法は基板下面基準
+raspi_port_z = wall_t + insert_boss_h;
 
 // ========================================================================
 // 表示切替
@@ -177,50 +183,57 @@ module lower_case() {
 
                 // --------------------------------------------------------
                 // Raspberry Pi 4B USB-A・RJ-45開口
-                // 開口底辺はケース外底面から12.1mm
+                // 開口底辺は基板下面からクリアランス分だけ下げる
                 // --------------------------------------------------------
                 port_y = -1;
 
-                usb_w = 12.0;
+                // 公式機械寸法図のコネクタ中心を取付穴基準へ変換
+                usb_center_x = [5.5, 23.5];
+                rj45_center_x = 42.25;
+
+                usb_w = 14.0;
                 usb_h = 16.0;
 
                 // USB-A 2段ポート1
                 translate([
-                    raspi_x + 4.5 - clearance,
+                    raspi_x + usb_center_x[0]
+                        - usb_w/2 - raspi_port_clearance,
                     port_y,
-                    raspi_port_z
+                    raspi_port_z - raspi_port_clearance
                 ])
                     cube([
-                        usb_w + clearance*2,
+                        usb_w + raspi_port_clearance*2,
                         wall_t + 2,
-                        usb_h + clearance*2
+                        usb_h + raspi_port_clearance*2
                     ]);
 
                 // USB-A 2段ポート2
                 translate([
-                    raspi_x + 18.5 - clearance,
+                    raspi_x + usb_center_x[1]
+                        - usb_w/2 - raspi_port_clearance,
                     port_y,
-                    raspi_port_z
+                    raspi_port_z - raspi_port_clearance
                 ])
                     cube([
-                        usb_w + clearance*2,
+                        usb_w + raspi_port_clearance*2,
                         wall_t + 2,
-                        usb_h + clearance*2
+                        usb_h + raspi_port_clearance*2
                     ]);
 
                 // RJ-45
-                rj45_w = 16.5;
+                rj45_w = 16.0;
                 rj45_h = 13.5;
 
                 translate([
-                    raspi_x + 34.0 - clearance,
+                    raspi_x + rj45_center_x
+                        - rj45_w/2 - raspi_port_clearance,
                     port_y,
-                    raspi_port_z
+                    raspi_port_z - raspi_port_clearance
                 ])
                     cube([
-                        rj45_w + clearance*2,
+                        rj45_w + raspi_port_clearance*2,
                         wall_t + 2,
-                        rj45_h + clearance*2
+                        rj45_h + raspi_port_clearance*2
                     ]);
 
                 // 底面排熱スリット
@@ -243,9 +256,9 @@ module lower_case() {
             // ------------------------------------------------------------
             raspi_holes = [
                 [0, 0],
-                [0, 58],
+                [0, raspi_hole_pitch_y],
                 [49, 0],
-                [49, 58]
+                [49, raspi_hole_pitch_y]
             ];
 
             for (h = raspi_holes) {
@@ -262,18 +275,20 @@ module lower_case() {
 
                         translate([0, 0, -1])
                             cylinder(
-                                d = insert_hole_d,
+                                d = board_insert_hole_d,
                                 h = insert_hole_depth
                             );
                     }
             }
 
             // ------------------------------------------------------------
-            // XL4015 取付ボス2個
+            // XL4015 取付ボス4個（32mm x 18mm）
             // ------------------------------------------------------------
             xl_holes = [
-                [0, 15],
-                [31, 0]
+                [0, 0],
+                [xl_hole_pitch_x, 0],
+                [0, -xl_hole_pitch_y],
+                [xl_hole_pitch_x, -xl_hole_pitch_y]
             ];
 
             for (h = xl_holes) {
@@ -290,7 +305,7 @@ module lower_case() {
 
                         translate([0, 0, -1])
                             cylinder(
-                                d = insert_hole_d,
+                                d = board_insert_hole_d,
                                 h = insert_hole_depth
                             );
                     }
