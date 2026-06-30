@@ -29,6 +29,8 @@ xl_wall_offset = 16; // 背面壁内面から最初のボス中心まで16mm（R
 xl_hole_pitch_x = 34;
 xl_hole_pitch_y = 18;
 xl_y = case_l - wall_t - xl_wall_offset;
+xl_center_y = xl_y - xl_hole_pitch_y / 2 - 2; // XL4015中心からy=0方向に2mm移動
+xl_center_hole_d = 3.0; // 蓋の貫通穴（X座標は左右スリット列の中間、Y座標はXL4015中心位置）
 
 // 下部外側4隅の足
 foot_h = 0.0;
@@ -363,73 +365,103 @@ module lower_case() {
 // ========================================================================
 // 上フタ
 // ========================================================================
+// 蓋エンボス文字
+emboss_text = "WF-Server";
+emboss_size = 5;
+emboss_h = 1.0;
+emboss_y = 117.5; // 空きスペースの中央（スリット終端y=107と蓋後端y=128の中間）
+
 module upper_cover() {
-    difference() {
-        upper_base_shape(
-            case_w,
-            case_l,
-            upper_thickness,
-            r_val
-        );
+    union() {
+        difference() {
+            upper_base_shape(
+                case_w,
+                case_l,
+                upper_thickness,
+                r_val
+            );
 
-        // 上面排熱スリット
-        slit_w = 1.5;
-        slit_l = 22;
+            // 上面排熱スリット
+            slit_w = 1.5;
+            slit_l = 22;
 
-        for (i = [0 : 8]) {
+            for (i = [0 : 8]) {
+                translate([
+                    case_w/2 - 15 - slit_l/2,
+                    wall_t + 15 + i*11,
+                    -1
+                ])
+                    cube([
+                        slit_l,
+                        slit_w,
+                        upper_thickness + 2
+                    ]);
+
+                translate([
+                    case_w/2 + 15 - slit_l/2,
+                    wall_t + 15 + i*11,
+                    -1
+                ])
+                    cube([
+                        slit_l,
+                        slit_w,
+                        upper_thickness + 2
+                    ]);
+            }
+
+            // XL4015中心位置の貫通穴（X座標は左右スリット列の中間）
             translate([
-                case_w/2 - 15 - slit_l/2,
-                wall_t + 15 + i*11,
-                -1
-            ])
-                cube([
-                    slit_l,
-                    slit_w,
-                    upper_thickness + 2
-                ]);
-
-            translate([
-                case_w/2 + 15 - slit_l/2,
-                wall_t + 15 + i*11,
-                -1
-            ])
-                cube([
-                    slit_l,
-                    slit_w,
-                    upper_thickness + 2
-                ]);
-        }
-
-        // 四隅皿穴
-        corner_offsets = [
-            [wall_t + 4, wall_t + 4],
-            [case_w - wall_t - 4, wall_t + 4],
-            [wall_t + 4, case_l - wall_t - 4],
-            [case_w - wall_t - 4,
-             case_l - wall_t - 4]
-        ];
-
-        for (c = corner_offsets) {
-            translate([
-                c[0],
-                c[1],
+                case_w / 2,
+                xl_center_y,
                 -1
             ])
                 cylinder(
-                    d = 3.4,
+                    d = xl_center_hole_d,
                     h = upper_thickness + 2
                 );
 
-            translate([
-                c[0],
-                c[1],
-                upper_thickness - 1.3
-            ])
-                cylinder(
-                    d1 = 3.4,
-                    d2 = 6.0,
-                    h = 1.301
-                );
+            // 四隅皿穴
+            corner_offsets = [
+                [wall_t + 4, wall_t + 4],
+                [case_w - wall_t - 4, wall_t + 4],
+                [wall_t + 4, case_l - wall_t - 4],
+                [case_w - wall_t - 4,
+                 case_l - wall_t - 4]
+            ];
+
+            for (c = corner_offsets) {
+                translate([
+                    c[0],
+                    c[1],
+                    -1
+                ])
+                    cylinder(
+                        d = 3.4,
+                        h = upper_thickness + 2
+                    );
+
+                translate([
+                    c[0],
+                    c[1],
+                    upper_thickness - 1.3
+                ])
+                    cylinder(
+                        d1 = 3.4,
+                        d2 = 6.0,
+                        h = 1.301
+                    );
+            }
         }
+
+        // 蓋エンボス文字
+        translate([case_w / 2, emboss_y, upper_thickness])
+            rotate([0, 0, 180])
+            linear_extrude(height = emboss_h)
+                text(
+                    emboss_text,
+                    size = emboss_size,
+                    halign = "center",
+                    valign = "center"
+                );
     }
 }

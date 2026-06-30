@@ -42,6 +42,8 @@ mode = 2;
 - Raspberry Pi 4B RJ45・USB開口クリアランス: 各辺 `1.0 mm`
 - Raspberry Pi 4B 取付ボス（Y方向）: 壁内面から `24 mm`、ピッチ `58 mm`
 - XL4015取付ボス: 背面壁内面から `16 mm`（Raspberry Pi基板後端と干渉しない範囲で最大化）、`34 mm x 18 mm`の長方形四隅
+- 上フタの貫通穴: `3.0 mm` (`xl_center_hole_d`)、X座標は左右排熱スリット列の中間、Y座標はXL4015中心位置
+- 上フタのエンボス文字: `"WF-Server"`（180度回転）、高さ `1.0 mm` (`emboss_h`)、文字サイズ `5 mm` (`emboss_size`)、後方の空きスペース中央（y=117.5mm）に配置
 
 Raspberry Pi 4B の基準位置と、RJ-45 / USB-A 開口位置はスクリプト内で定義されています。  
 現在の版では `Type-C` 用の開口は含めていません。
