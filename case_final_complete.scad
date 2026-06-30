@@ -26,7 +26,7 @@ raspi_hole_pitch_y = 58;
 // XL4015 基準位置
 xl_x = wall_t + 18;
 xl_wall_offset = 10; // 背面壁内面から最初のボス中心まで10mm
-xl_hole_pitch_x = 32;
+xl_hole_pitch_x = 34;
 xl_hole_pitch_y = 18;
 xl_y = case_l - wall_t - xl_wall_offset;
 
@@ -36,7 +36,10 @@ foot_d = 10.0;
 foot_inset = 9.0;
 
 // インサートナット用ボス共通寸法
-insert_boss_d = 7.5;
+lid_boss_d = 7.5;   // 蓋固定用ボス外径（四隅）
+board_boss_d = 7.5; // Raspberry Pi・XL4015取付ボス外径（基板と干渉しない最大値、上部のみ）
+board_boss_base_d = 9.0; // 割れ対策の末広がり部底面外径（基板とは接触しない範囲なので拡張可）
+board_boss_flare_h = 3.0; // 末広がり部の高さ
 insert_boss_h = 8.0;
 insert_hole_d = 4.8;
 board_insert_hole_d = 4.95; // Raspberry Pi・XL4015用
@@ -133,6 +136,33 @@ module upper_base_shape(x, y, z, r) {
                         max(r - inset, 0.01)
                     );
         }
+    }
+}
+
+// Raspberry Pi・XL4015 取付ボス（割れ防止のため底面を末広がり形状に）
+// 上部（基板に近い側）は board_boss_d を維持し、基板との干渉を回避
+// 下部（接地側）は board_boss_base_d まで広げて肉厚を確保し割れを防止
+module board_boss() {
+    difference() {
+        union() {
+            cylinder(
+                d1 = board_boss_base_d,
+                d2 = board_boss_d,
+                h = board_boss_flare_h
+            );
+
+            translate([0, 0, board_boss_flare_h])
+                cylinder(
+                    d = board_boss_d,
+                    h = insert_boss_h - board_boss_flare_h
+                );
+        }
+
+        translate([0, 0, -1])
+            cylinder(
+                d = board_insert_hole_d,
+                h = insert_hole_depth
+            );
     }
 }
 
@@ -267,18 +297,7 @@ module lower_case() {
                     raspi_y + h[1],
                     wall_t
                 ])
-                    difference() {
-                        cylinder(
-                            d = insert_boss_d,
-                            h = insert_boss_h
-                        );
-
-                        translate([0, 0, -1])
-                            cylinder(
-                                d = board_insert_hole_d,
-                                h = insert_hole_depth
-                            );
-                    }
+                    board_boss();
             }
 
             // ------------------------------------------------------------
@@ -297,18 +316,7 @@ module lower_case() {
                     xl_y + h[1],
                     wall_t
                 ])
-                    difference() {
-                        cylinder(
-                            d = insert_boss_d,
-                            h = insert_boss_h
-                        );
-
-                        translate([0, 0, -1])
-                            cylinder(
-                                d = board_insert_hole_d,
-                                h = insert_hole_depth
-                            );
-                    }
+                    board_boss();
             }
 
             // ------------------------------------------------------------
@@ -333,7 +341,7 @@ module lower_case() {
                     difference() {
                         union() {
                             cylinder(
-                                d = insert_boss_d,
+                                d = lid_boss_d,
                                 h = boss_h
                             );
 
